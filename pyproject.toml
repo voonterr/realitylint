@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "realitylint"
+version = "0.1.2"
+description = "Verify README claims against repository facts — locally, deterministically, without an LLM."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "voonterr"}]
+dependencies = ["tomli>=2.0; python_version < '3.11'"]
+keywords = ["readme", "documentation", "lint", "developer-tools", "ci", "static-analysis"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Quality Assurance",
+]
+
+[project.urls]
+Homepage = "https://github.com/voonterr/realitylint"
+Repository = "https://github.com/voonterr/realitylint"
+Issues = "https://github.com/voonterr/realitylint/issues"
+
+[project.scripts]
+realitylint = "realitylint.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["realitylint*"]

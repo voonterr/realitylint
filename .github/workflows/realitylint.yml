@@ -1,0 +1,35 @@
+name: README reality check
+
+on:
+  pull_request:
+    paths:
+      - "README.md"
+      - "README.ru.md"
+      - "ROADMAP.md"
+      - "package.json"
+      - "package-lock.json"
+      - "pnpm-lock.yaml"
+      - "yarn.lock"
+      - "bun.lock"
+      - "bun.lockb"
+      - "pyproject.toml"
+      - "Makefile"
+      - "**/*.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  realitylint:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        readme: [README.md, README.ru.md]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./
+        with:
+          readme: ${{ matrix.readme }}
+          fail-on: error

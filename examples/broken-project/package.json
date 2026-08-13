@@ -1,0 +1,6 @@
+{
+  "name": "broken-demo",
+  "scripts": {
+    "build": "echo build"
+  }
+}

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="title desc">
+  <title id="title">RealityLint</title>
+  <desc id="desc">README drift detector by voonterr</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1020"/>
+      <stop offset="0.55" stop-color="#171232"/>
+      <stop offset="1" stop-color="#26114a"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#a78bfa"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="28"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="300" rx="28" fill="url(#bg)"/>
+  <circle cx="1040" cy="35" r="150" fill="#7c3aed" opacity="0.20" filter="url(#glow)"/>
+  <circle cx="120" cy="285" r="135" fill="#0891b2" opacity="0.15" filter="url(#glow)"/>
+  <g transform="translate(72 58)">
+    <rect x="0" y="0" width="74" height="74" rx="18" fill="#ffffff" opacity="0.08"/>
+    <path d="M20 39l12 12 25-29" fill="none" stroke="url(#accent)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="98" y="54" fill="#f8fafc" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="62">RealityLint</text>
+    <text x="2" y="118" fill="#cbd5e1" font-family="Arial, Helvetica, sans-serif" font-size="27">Your README says it works. Check if the repository agrees.</text>
+  </g>
+  <g transform="translate(72 224)" font-family="Arial, Helvetica, sans-serif" font-size="18">
+    <rect width="120" height="38" rx="19" fill="#ffffff" opacity="0.08"/><text x="22" y="25" fill="#ddd6fe">local-first</text>
+    <rect x="134" width="100" height="38" rx="19" fill="#ffffff" opacity="0.08"/><text x="159" y="25" fill="#ddd6fe">no LLM</text>
+    <rect x="248" width="112" height="38" rx="19" fill="#ffffff" opacity="0.08"/><text x="271" y="25" fill="#ddd6fe">CI-ready</text>
+    <rect x="374" width="154" height="38" rx="19" fill="#ffffff" opacity="0.08"/><text x="396" y="25" fill="#ddd6fe">static analysis</text>
+  </g>
+  <text x="1090" y="264" text-anchor="end" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-size="18">by @voonterr</text>
+</svg>

@@ -1,0 +1,32 @@
+name: RealityLint
+description: Verify README claims against repository facts without executing README commands.
+author: voonterr
+inputs:
+  readme:
+    description: README path relative to repository root
+    required: false
+    default: README.md
+  fail-on:
+    description: error, warning, or never
+    required: false
+    default: error
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+      with:
+        python-version: "3.13"
+    - name: Scan README
+      shell: bash
+      env:
+        REALITYLINT_README: ${{ inputs.readme }}
+        REALITYLINT_FAIL_ON: ${{ inputs.fail-on }}
+      run: >-
+        python "$GITHUB_ACTION_PATH/scripts/action.py"
+        "$GITHUB_WORKSPACE"
+        --readme "$REALITYLINT_README"
+        --fail-on "$REALITYLINT_FAIL_ON"
+branding:
+  icon: check-circle
+  color: purple

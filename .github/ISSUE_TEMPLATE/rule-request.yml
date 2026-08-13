@@ -1,0 +1,25 @@
+name: New rule / Новое правило
+description: Suggest a repository claim that RealityLint should verify. / Предложить новую детерминированную проверку.
+title: "rule: "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        English or Russian is welcome. / Можно писать на английском или русском.
+  - type: textarea
+    attributes:
+      label: README claim to verify / Что нужно проверять
+      description: Show a realistic documentation example. / Приведите реальный пример из документации.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Repository evidence / Данные репозитория
+      description: Explain which local file(s) can prove or disprove the claim without executing arbitrary commands. / Какие локальные файлы могут подтвердить или опровергнуть утверждение без выполнения произвольных команд?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: False-positive risks / Риск ложных срабатываний
+      description: Describe ambiguous cases the rule should skip. / Укажите неоднозначные случаи, которые правило должно пропускать.

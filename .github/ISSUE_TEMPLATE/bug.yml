@@ -1,0 +1,30 @@
+name: Bug report / Ошибка
+description: Report a false positive, false negative, or crash. / Сообщить об ошибке проверки или падении.
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        English or Russian is welcome. / Можно писать на английском или русском.
+  - type: textarea
+    attributes:
+      label: What happened? / Что произошло?
+      description: Include the README snippet and relevant repository structure when possible. / По возможности приложите фрагмент README и структуру файлов.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: RealityLint version / Версия
+      placeholder: 0.1.2
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behavior / Ожидаемое поведение
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Environment / Окружение
+      description: OS, Python version, and anything else that may matter. / ОС, версия Python и другие важные детали.
