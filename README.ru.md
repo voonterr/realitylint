@@ -14,6 +14,7 @@
 
 [![CI](https://github.com/voonterr/realitylint/actions/workflows/ci.yml/badge.svg)](https://github.com/voonterr/realitylint/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![PyPI](https://img.shields.io/pypi/v/realitylint.svg?logo=pypi&logoColor=white)](https://pypi.org/project/realitylint/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-7C3AED.svg)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/voonterr/realitylint?style=flat)](https://github.com/voonterr/realitylint/stargazers)
 
@@ -93,17 +94,30 @@ RealityLint score: 34/100
 
 **Нужен Python 3.10+.**
 
+Установка из PyPI:
+
+```bash
+python -m pip install realitylint
+```
+
+Проверить текущий репозиторий:
+
+```bash
+realitylint .
+```
+
+Проверить другой репозиторий:
+
+```bash
+realitylint /path/to/repository
+```
+
+Установить последнюю версию напрямую из исходного кода:
+
 ```bash
 git clone https://github.com/voonterr/realitylint.git
 cd realitylint
 python -m pip install -e .
-realitylint .
-```
-
-Без установки console script:
-
-```bash
-python -m realitylint /path/to/repository
 ```
 
 Проверить специально сломанный пример:
@@ -111,7 +125,6 @@ python -m realitylint /path/to/repository
 ```bash
 realitylint examples/broken-project --fail-on never
 ```
-
 ## GitHub Actions
 
 Добавьте в другой проект `.github/workflows/realitylint.yml`:
@@ -135,7 +148,6 @@ jobs:
 
 Action создаёт inline-аннотации и Markdown summary прямо в GitHub Actions.
 
-> **Важно:** `voonterr/realitylint@v1` начнёт работать после публикации первого тега `v1`. Чек-лист релиза находится в [PUBLISH.md](PUBLISH.md).
 
 ## Форматы вывода
 
