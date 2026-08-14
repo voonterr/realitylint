@@ -14,6 +14,7 @@ Static, deterministic README-vs-repository verification — **without executing 
 
 [![CI](https://github.com/voonterr/realitylint/actions/workflows/ci.yml/badge.svg)](https://github.com/voonterr/realitylint/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![PyPI](https://img.shields.io/pypi/v/realitylint.svg?logo=pypi&logoColor=white)](https://pypi.org/project/realitylint/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-7C3AED.svg)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/voonterr/realitylint?style=flat)](https://github.com/voonterr/realitylint/stargazers)
 
@@ -91,17 +92,30 @@ RealityLint also understands common `cd subdir && ...` flows, `npm --prefix`, `y
 
 **Requires Python 3.10+.**
 
+Install from PyPI:
+
+```bash
+python -m pip install realitylint
+```
+
+Check the current repository:
+
+```bash
+realitylint .
+```
+
+Or scan another repository:
+
+```bash
+realitylint /path/to/repository
+```
+
+Install the latest development version from source:
+
 ```bash
 git clone https://github.com/voonterr/realitylint.git
 cd realitylint
 python -m pip install -e .
-realitylint .
-```
-
-Or run it from the source checkout without installing the console script:
-
-```bash
-python -m realitylint /path/to/repository
 ```
 
 Try the intentionally broken fixture:
@@ -133,7 +147,6 @@ jobs:
 
 The action emits inline annotations and a Markdown job summary.
 
-> **Note:** `voonterr/realitylint@v1` becomes usable after the first `v1` tag is published. See [PUBLISH.md](PUBLISH.md) for the release checklist.
 
 ## Output formats
 
