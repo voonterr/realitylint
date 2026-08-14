@@ -106,7 +106,19 @@ def github_annotations(findings: list[Finding]) -> list[str]:
     return annotations
 
 
+def _configure_utf8_stdio() -> None:
+    """Prefer UTF-8 for human-readable CLI output on legacy Windows consoles/CI."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            try:
+                reconfigure(encoding="utf-8", errors="replace")
+            except (AttributeError, OSError, ValueError):
+                pass
+
+
 def main(argv: list[str] | None = None) -> int:
+    _configure_utf8_stdio()
     parser = argparse.ArgumentParser(prog="realitylint", description="Verify README claims against repository facts.")
     parser.add_argument("root", nargs="?", default=".", help="Repository root (default: current directory)")
     parser.add_argument("--readme", default="README.md", help="README path relative to root")

@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import io
 import json
+import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
@@ -46,6 +49,26 @@ class CliTests(unittest.TestCase):
         self.assertEqual(payload["tool"]["version"], __version__)
         self.assertFalse(output.startswith("RealityLint v"), "JSON stdout must not be contaminated by the human banner")
 
+
+    def test_legacy_windows_stdout_is_reconfigured_to_utf8(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        root = Path(self.tmp.name)
+        (root / "README.md").write_text("# Clean README\n", encoding="utf-8")
+
+        raw = io.BytesIO()
+        stream = io.TextIOWrapper(raw, encoding="cp1252")
+        try:
+            with patch.object(sys, "stdout", stream):
+                code = main([str(root), "--fail-on", "never"])
+                stream.flush()
+            self.assertEqual(code, 0)
+            self.assertIn("✓", raw.getvalue().decode("utf-8"))
+        finally:
+            try:
+                stream.detach()
+            except (ValueError, OSError):
+                pass
 
     def test_text_output_has_author_banner(self):
         root = self.make_repo()

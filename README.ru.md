@@ -38,7 +38,7 @@ RealityLint специально работает консервативно: е
 ## Демо за 30 секунд
 
 <p align="center">
-  <img src="docs/assets/demo.gif" alt="RealityLint terminal demo" width="900" />
+  <img src="docs/assets/demo.gif" alt="Демонстрация RealityLint" width="900" />
 </p>
 
 ```bash
@@ -46,7 +46,7 @@ realitylint examples/broken-project --fail-on never
 ```
 
 ```text
-RealityLint v0.1.2 — by @voonterr
+RealityLint v0.1.3 — by @voonterr
 RealityLint score: 34/100
 
 ✗ README.md:3 ERROR   RL002 Ссылка ведёт на отсутствующий "docs/setup.md".

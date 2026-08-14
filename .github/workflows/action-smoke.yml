@@ -1,0 +1,24 @@
+name: Action smoke test
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Test RealityLint v1 — English
+        uses: voonterr/realitylint@v1
+        with:
+          fail-on: error
+      - name: Test RealityLint v1 — Russian
+        uses: voonterr/realitylint@v1
+        with:
+          readme: README.ru.md
+          fail-on: error

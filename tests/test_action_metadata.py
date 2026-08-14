@@ -23,6 +23,8 @@ class ActionMetadataTests(unittest.TestCase):
             for ref in external_use.findall(text):
                 if ref.startswith("./"):
                     continue
+                if path.name == "action-smoke.yml" and ref == "voonterr/realitylint@v1":
+                    continue  # This workflow intentionally verifies the public moving major tag.
                 self.assertRegex(ref, full_sha, f"{path}: unpinned action {ref}")
 
     def test_workflows_use_read_only_contents_permission(self):

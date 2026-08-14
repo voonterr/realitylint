@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.3
+
+- Fix Windows/GitHub Actions CLI crashes when the console uses a legacy code page such as cp1252.
+- Force UTF-8 safely for stdout/stderr when the Python stream supports reconfiguration.
+- Add a regression test for legacy Windows stdout encoding.
+- Add an external `voonterr/realitylint@v1` smoke-test workflow.
+
 ## 0.1.2
 
 - Branded package, CLI, GitHub Action, metadata, license, and repository links as **@voonterr**.
