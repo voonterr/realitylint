@@ -1,0 +1,7 @@
+- id: realitylint
+  name: RealityLint documentation drift check
+  entry: realitylint
+  language: python
+  pass_filenames: false
+  args: ["--all-docs", "--fail-on", "error"]
+  files: '(^README.*\.md$|^docs/.*\.md$|^CONTRIBUTING\.md$|package\.json$|pyproject\.toml$|Cargo\.toml$|go\.mod$|compose\.ya?ml$|docker-compose\.ya?ml$|\.env\.(example|sample)$)'

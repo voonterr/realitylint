@@ -1,12 +1,12 @@
 <div align="center">
 
-<img src="docs/assets/banner.svg" alt="RealityLint — README drift detector" width="100%" />
+<img src="docs/assets/banner.svg" alt="RealityLint — documentation drift detector" width="100%" />
 
 # RealityLint
 
-**Your README says it works. RealityLint checks if it actually does.**
+**Your docs describe the project. RealityLint checks the claims the repository can actually prove.**
 
-Static, deterministic README-vs-repository verification — **without executing README commands, without an LLM, and without sending your code anywhere.**
+Static, deterministic documentation-vs-repository verification — **no command execution, no LLM, no API key, no code upload.**
 
 **by [@voonterr](https://github.com/voonterr)**
 
@@ -18,23 +18,23 @@ Static, deterministic README-vs-repository verification — **without executing 
 [![License: MIT](https://img.shields.io/badge/license-MIT-7C3AED.svg)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/voonterr/realitylint?style=flat)](https://github.com/voonterr/realitylint/stargazers)
 
-`local-first` · `no API key` · `no LLM` · `CI-ready` · `safe static analysis`
+`local-first` · `deterministic` · `multi-doc` · `Docker` · `Go` · `Rust` · `CI-ready`
 
 </div>
 
 ---
 
-## The problem
+## Why this exists
 
-README files drift.
+Documentation drifts because code changes faster than prose.
 
-A command gets renamed. A file moves. `.env.example` disappears. The project switches from Yarn to npm. AI-generated documentation confidently describes a script that never existed.
+A script is renamed, a path moves, `.env.example` stops matching reality, a Docker Compose service disappears, or a Cargo feature is removed — while the setup guide still looks perfectly valid.
 
-Most Markdown linters can tell you whether the document is formatted correctly. RealityLint asks a different question:
+Markdown linters validate Markdown. RealityLint validates a different thing:
 
-> **Do the locally verifiable claims in this README still match the repository?**
+> **Do the concrete claims in the documentation still match repository facts?**
 
-It stays deliberately conservative: if a claim cannot be proven from local repository evidence, RealityLint skips it instead of guessing.
+RealityLint deliberately stays conservative. If a claim cannot be verified deterministically from local files, it is skipped instead of guessed.
 
 ## 30-second demo
 
@@ -43,93 +43,155 @@ It stays deliberately conservative: if a claim cannot be proven from local repos
 </p>
 
 ```bash
-realitylint examples/broken-project --fail-on never
+python -m pip install realitylint
+realitylint .
 ```
 
-```text
-RealityLint v0.1.3 — by @voonterr
-RealityLint score: 34/100
+For a broader project scan:
 
-✗ README.md:3 ERROR   RL002 Documented local link target "docs/setup.md" does not exist.
-! README.md:6 WARNING RL004 README uses yarn, but the repository has only an npm lockfile.
-✗ README.md:7 ERROR   RL001 Documented package script "dev" is not defined in package.json.
-✗ README.md:8 ERROR   RL003 Documented environment template ".env.example" does not exist.
-✗ README.md:9 ERROR   RL005 Documented Python entry file "scripts/start.py" does not exist.
-
-4 error(s), 1 warning(s), 0 notice(s).
+```bash
+realitylint . --all-docs
 ```
 
-## Why RealityLint?
+## v0.5: Project Truth
 
-| | RealityLint |
-|---|---|
-| **Deterministic** | Same repository → same result. No model randomness. |
-| **Safe by design** | Parses commands from docs but never executes them. |
-| **Private** | Your repository never leaves the machine. |
-| **CI-friendly** | Text, JSON, Markdown and SARIF output. |
-| **Low false-positive bias** | Ambiguous claims are skipped instead of guessed. |
-| **Monorepo-aware** | Understands common working-directory forms such as `cd frontend && ...`. |
+RealityLint v0.5 expands from a README checker into a project-wide documentation drift engine.
+
+Highlights:
+
+- **multi-document scanning** for `README*.md`, `docs/**/*.md`, `CONTRIBUTING.md`, and custom globs;
+- **Docker Compose drift**: Compose-file availability, documented services, missing `env_file` paths, profiles, and nearby localhost-port mismatches;
+- **environment-variable drift** between docs, `.env.example` / `.env.sample`, and common source-code access patterns;
+- **Go checks** for local `go run` targets and Go-version claim drift;
+- **Rust/Cargo checks** for manifests, `--bin`, `--features`, and MSRV claim drift;
+- **inline ignore directives** for intentionally broken examples;
+- optional **`.realitylint.toml`** rule severity and docs configuration;
+- **baseline mode** for adopting RealityLint in an existing repository without fixing every old finding first;
+- `realitylint init`, `realitylint rules`, and `realitylint explain RLxxx`;
+- **JUnit XML** in addition to text, JSON, Markdown, and SARIF;
+- **pre-commit** integration;
+- richer GitHub Action inputs for all-docs/custom-doc scans.
+
+See [RELEASE_NOTES_v0.5.0.md](RELEASE_NOTES_v0.5.0.md) for the release overview.
 
 ## What it checks
 
 | Rule | Verification |
 |---|---|
-| `RL000` | Repository/README scan preconditions are safe and readable |
-| `RL001` | npm/pnpm/yarn/bun package scripts exist in the relevant `package.json` |
-| `RL002` | Relative Markdown links and images point to real local paths |
-| `RL003` | Documented `.env.example` / `.env.sample` files exist |
-| `RL004` | Package-manager commands agree with the detected lockfile family |
+| `RL000` | Repository/document scan preconditions are safe and readable |
+| `RL001` | npm/pnpm/yarn/bun package scripts exist |
+| `RL002` | Relative Markdown links/images point to real local paths |
+| `RL003` | Documented `.env.example` / `.env.sample` copy sources exist |
+| `RL004` | Package-manager commands agree with the lockfile family |
 | `RL005` | Python entry-file commands point to real files |
-| `RL006` | Documented Make targets exist in GNUmakefile/makefile/Makefile |
-| `RL007` | Pinned self-install versions agree with `[project].version` |
+| `RL006` | Documented Make targets exist |
+| `RL007` | Pinned self-install versions match `pyproject.toml` |
 | `RL008` | A claimed common license has a real LICENSE/COPYING file |
 | `RL009` | Obvious inline repository paths still exist *(notice)* |
-| `RL010` | Malformed/unreadable package metadata is reported instead of crashing |
+| `RL010` | Malformed/unreadable metadata is reported safely |
+| `RL011` | A documented Docker Compose command has a readable Compose file |
+| `RL012` | Docker Compose services named in docs actually exist |
+| `RL013` | Compose `env_file` paths exist |
+| `RL014` | Explicitly documented environment variables exist in env templates |
+| `RL015` | Local `go run` targets exist and contain Go source |
+| `RL016` | Documented Cargo commands have a readable `Cargo.toml` |
+| `RL017` | `cargo run --bin NAME` points to a defined binary |
+| `RL018` | Cargo features named in docs exist in `[features]` |
+| `RL019` | Docker Compose profiles named with `--profile` are declared |
+| `RL020` | Nearby documented localhost ports match Compose-published host ports |
+| `RL021` | Human-readable Go version claims stay aligned with `go.mod` |
+| `RL022` | Human-readable Rust version claims stay aligned with Cargo `rust-version` |
 
-RealityLint also understands common `cd subdir && ...` flows, `npm --prefix`, `yarn --cwd`, `pnpm --dir` / `pnpm -C`, `bun --cwd`, `make -C`, nested README link bases, Windows-style path separators/prompts, backtick/tilde shell fences and inline shell commands.
-
-## Quick start
-
-**Requires Python 3.10+.**
-
-Install from PyPI:
+List rules from the installed CLI:
 
 ```bash
-python -m pip install realitylint
+realitylint rules
+realitylint explain RL012
 ```
 
-Check the current repository:
+## Scan one document or the project
+
+Primary README only (backward compatible):
 
 ```bash
 realitylint .
 ```
 
-Or scan another repository:
+Common project documentation:
 
 ```bash
-realitylint /path/to/repository
+realitylint . --all-docs
 ```
 
-Install the latest development version from source:
+Custom documentation globs:
 
 ```bash
-git clone https://github.com/voonterr/realitylint.git
-cd realitylint
-python -m pip install -e .
+realitylint . --docs "README*.md,docs/**/*.md"
 ```
 
-Try the intentionally broken fixture:
+The original document-relative behavior is preserved: local links inside nested docs are resolved relative to that document.
+
+## Configuration
+
+RealityLint remains zero-config by default. For larger repositories, add `.realitylint.toml`:
+
+```toml
+[realitylint]
+docs = ["README*.md", "docs/**/*.md"]
+exclude = ["docs/vendor/**"]
+
+[severity]
+RL009 = "off"
+RL014 = "warning"
+```
+
+Valid severity values are `error`, `warning`, `notice`, and `off`.
+
+Bootstrap a repository with a config and a GitHub Actions workflow:
 
 ```bash
-realitylint examples/broken-project --fail-on never
+realitylint init
+```
+
+## Intentional examples / ignore directives
+
+Documentation sometimes contains deliberately invalid examples. Suppress only the relevant line instead of disabling a rule globally:
+
+```text
+<!-- realitylint-ignore-next-line RL012 -->
+<an intentionally invalid Compose example>
+```
+
+Block-level directives are also supported:
+
+```text
+<!-- realitylint-disable RL014 -->
+...
+<!-- realitylint-enable RL014 -->
+```
+
+## Baseline mode
+
+Large established repositories can adopt RealityLint incrementally.
+
+Create a baseline from current findings:
+
+```bash
+realitylint . --all-docs --write-baseline
+```
+
+The generated `.realitylint-baseline.json` is automatically used on later scans. Existing findings are suppressed; new documentation drift still fails CI.
+
+Disable automatic baseline use when needed:
+
+```bash
+realitylint . --no-baseline
 ```
 
 ## GitHub Actions
 
-Add this to `.github/workflows/realitylint.yml` in another repository:
-
 ```yaml
-name: README reality check
+name: Documentation reality check
 on: [pull_request]
 
 permissions:
@@ -142,11 +204,21 @@ jobs:
       - uses: actions/checkout@v7
       - uses: voonterr/realitylint@v1
         with:
+          all-docs: "true"
           fail-on: error
 ```
 
-The action emits inline annotations and a Markdown job summary.
+The Action emits inline annotations and a Markdown job summary. Inputs are passed through environment variables rather than interpolated directly into shell commands.
 
+## pre-commit
+
+```yaml
+repos:
+  - repo: https://github.com/voonterr/realitylint
+    rev: v0.5.0
+    hooks:
+      - id: realitylint
+```
 
 ## Output formats
 
@@ -155,9 +227,10 @@ realitylint . --format text
 realitylint . --format json
 realitylint . --format markdown
 realitylint . --format sarif
+realitylint . --format junit
 ```
 
-CI failure policy:
+CI policy:
 
 ```bash
 realitylint . --fail-on error
@@ -165,64 +238,52 @@ realitylint . --fail-on warning
 realitylint . --fail-on never
 ```
 
-Machine-readable formats keep stdout clean — the `by @voonterr` banner does not corrupt JSON or SARIF output.
+Machine-readable formats keep stdout clean.
 
-## Security model
+## Safety model
 
-RealityLint is intentionally a **static checker**, not a sandbox.
+RealityLint is a **static checker**, not a sandbox.
 
-- README commands are parsed, **never executed**.
-- `--readme` cannot escape the repository root.
-- Symlink/path resolution is contained before files are read.
-- README and metadata files have size limits to reduce memory/regex abuse.
-- GitHub Action inputs are passed through environment variables instead of direct shell interpolation.
-- GitHub annotations escape workflow-command control characters.
+- Documentation commands are parsed, **never executed**.
+- No LLM is used as the source of truth.
+- No API key or external service is required for scanning.
+- Source code and docs remain local.
+- Repository path containment and file-size limits are enforced by the legacy/core rules.
+- Ambiguous claims are skipped rather than invented.
+- GitHub workflow annotations escape workflow-command control characters.
 - Third-party Actions used by this repository are pinned to immutable commit SHAs.
-- No network access is required for the scanner itself.
 
-Found a security issue? Please read [SECURITY.md](SECURITY.md) instead of opening a public exploit report.
+Found a security issue? Please read [SECURITY.md](SECURITY.md).
 
-## Project philosophy
+## Philosophy
 
-1. **Evidence over vibes.** Every finding should point to repository evidence.
-2. **No arbitrary execution.** Documentation commands are parsed, never run.
-3. **Prefer silence to a false accusation.** Ambiguous syntax is skipped.
-4. **Local-first.** Source code and docs stay on the user's machine.
-5. **Small rules, easy contributions.** Ecosystem checks should remain isolated and testable.
+1. **Evidence over vibes.** Every finding should be backed by repository evidence.
+2. **No arbitrary execution.** Docs can contain hostile commands; RealityLint never runs them.
+3. **Prefer silence to false certainty.** A deterministic checker should not pretend to understand what it cannot prove.
+4. **Zero-config first, configurable when needed.** Small repos should work immediately; larger repos can tune severity and scope.
+5. **Rules stay isolated and testable.** New ecosystems should be easy to add without turning the scanner into a shell interpreter.
 
-## Roadmap
-
-Near-term priorities:
-
-- [ ] Go: `go run`, module path and toolchain claims
-- [ ] Rust: `cargo run --bin`, features and MSRV claims
-- [ ] Docker Compose service/port verification
-- [ ] `.env` variable drift: code ↔ template ↔ docs
-- [ ] pre-commit hook
-- [ ] ignore directives for intentional examples
-- [ ] CLI flag verification from generated `--help` snapshots
-
-See the detailed [ROADMAP.md](ROADMAP.md).
+See [ROADMAP.md](ROADMAP.md) for what comes next.
 
 ## Contributing
 
-Bug reports, rule ideas and pull requests are welcome.
+Bug reports, rule ideas, false-positive reports and pull requests are welcome.
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-Start with [CONTRIBUTING.md](CONTRIBUTING.md). New contributors can also open a rule request using the repository issue template.
+Start with [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Status
 
-RealityLint is currently **alpha software**. Its checks are intentionally narrow and deterministic. It will not understand every shell expression or every documentation style — and it should not pretend to.
+RealityLint v0.5 is **beta software**. The project intentionally covers a finite set of deterministic claims instead of trying to understand arbitrary natural language.
 
 ## Author
 
 Created and maintained by **[@voonterr](https://github.com/voonterr)**.
 
-If RealityLint saves you from a broken README, consider ⭐ starring the repository — it helps other developers discover the project.
+If RealityLint catches real documentation drift in your project, ⭐ starring the repository helps other developers discover it.
 
 ## License
 

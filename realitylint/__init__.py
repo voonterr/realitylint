@@ -1,5 +1,5 @@
 """RealityLint package metadata."""
 
-__version__ = "0.1.3"
+__version__ = "0.5.0"
 __author__ = "@voonterr"
 __repository__ = "https://github.com/voonterr/realitylint"
