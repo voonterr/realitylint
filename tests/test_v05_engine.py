@@ -98,7 +98,7 @@ class V05RuleTests(unittest.TestCase):
         self.assertIn("RL022", {f.rule for f in scan_rust_drift(root, doc)})
 
     def test_multi_doc_discovery(self):
-        root = self.repo()
+        root = self.repo().resolve(strict=False)
         self.write(root, "README.md", "# root\n")
         self.write(root, "README.ru.md", "# ru\n")
         self.write(root, "docs/setup.md", "# setup\n")
