@@ -1,0 +1,27 @@
+from __future__ import annotations
+
+RULES: dict[str, tuple[str, str]] = {
+    "RL000": ("Repository/README availability", "The repository and requested documentation file must be readable."),
+    "RL001": ("Package script exists", "Documented npm/yarn/pnpm/bun scripts must exist in package.json."),
+    "RL002": ("Local link exists", "Relative Markdown links must resolve to files inside the repository."),
+    "RL003": ("Environment template exists", "Documented .env.example/.env.sample copy sources must exist."),
+    "RL004": ("Package manager matches lockfile", "Documented package-manager commands should match the repository lockfile family."),
+    "RL005": ("Python entry file exists", "Documented Python entry files must exist."),
+    "RL006": ("Make target exists", "Documented Make targets must exist in the working directory Makefile."),
+    "RL007": ("Self-install version matches", "Pinned installs of the current Python package must match pyproject.toml."),
+    "RL008": ("License claim has license file", "A documented license claim should have a LICENSE/COPYING file."),
+    "RL009": ("Inline repository path exists", "Obvious inline repository paths should still exist."),
+    "RL010": ("Metadata is parseable", "Metadata required to verify documentation should be readable and structurally valid."),
+    "RL011": ("Docker Compose file exists", "Documented docker compose commands require a readable Compose file."),
+    "RL012": ("Docker Compose service exists", "Services named in docker compose commands must exist in the Compose model."),
+    "RL013": ("Compose env_file exists", "env_file paths referenced by Compose services must exist."),
+    "RL014": ("Environment variable is represented", "Environment variables explicitly documented by name should exist in .env templates."),
+    "RL015": ("Go run target exists", "Local packages/files passed to go run must exist and contain Go source."),
+    "RL016": ("Cargo manifest exists", "Documented Cargo commands require a readable Cargo.toml in the working directory."),
+    "RL017": ("Cargo binary exists", "A binary named with cargo run --bin must be defined by the package."),
+    "RL018": ("Cargo feature exists", "Features passed to Cargo must exist in Cargo.toml [features]."),
+    "RL019": ("Docker Compose profile exists", "Profiles passed with --profile should be declared by Compose services."),
+    "RL020": ("Documented localhost port is published", "Nearby localhost ports in Compose setup docs should match published host ports."),
+    "RL021": ("Go version claim matches go.mod", "Human-readable Go version claims should stay aligned with the go.mod language directive."),
+    "RL022": ("Rust version claim matches MSRV", "Human-readable Rust version claims should stay aligned with Cargo package.rust-version."),
+}

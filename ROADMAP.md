@@ -2,40 +2,49 @@
 
 > [English](README.md) · [Русский](README.ru.md)
 
-RealityLint grows by adding **small, deterministic checks** rather than trying to become a general-purpose shell interpreter.
+RealityLint grows through **small deterministic rules** rather than trying to become a general-purpose shell or natural-language interpreter.
 
-## v0.2 — More ecosystems
+## v0.5 — Project Truth
 
-- Go: `go run`, module path and toolchain claims.
-- Rust: `cargo run --bin`, features and MSRV claims.
-- Docker Compose: documented services and ports.
+- [x] Multi-document scanning.
+- [x] Docker Compose file/service/env-file/profile/nearby-port verification.
+- [x] Environment-variable documentation drift.
+- [x] Go `go run` local-target and version-claim checks.
+- [x] Rust/Cargo manifest, binary, feature and MSRV-claim checks.
+- [x] `.realitylint.toml` docs/severity configuration.
+- [x] Ignore directives for intentional examples.
+- [x] Baseline mode for incremental adoption.
+- [x] `init`, `rules`, `explain` CLI commands.
+- [x] pre-commit metadata.
+- [x] JUnit output.
+
+## v0.6 — Deeper ecosystem facts
+
+- Go module-path claims and deeper workspace/module discovery.
+- Rust workspace-aware package resolution and target discovery.
+- Docker Compose dynamic/interpolated port and multi-file merge verification.
+- Environment-variable ownership by service/subproject instead of project-wide union.
 - Better monorepo package discovery.
 
-## v0.3 — Documentation drift
+## v0.7 — Developer workflow
 
-- `.env` variable drift across source, templates and docs.
 - CLI flag verification using generated `--help` snapshots.
-- Ignore directives for intentionally broken examples.
-- Config file for rule severity and exclusions.
-
-## v0.4 — Developer workflow
-
-- pre-commit integration.
-- Baseline files for incremental adoption.
-- Improved SARIF locations and GitHub code scanning examples.
+- Richer SARIF rule help and end-column locations.
+- Optional changed-files mode for very large repositories.
 - Rule documentation pages with good/bad examples.
+- Baseline pruning/refresh commands.
+
+## v1.0 criteria
+
+- Stable rule IDs and config schema.
+- Cross-platform CI coverage on supported Python versions.
+- Low false-positive rate validated on a representative public-repository fixture set.
+- Stable GitHub Action and pre-commit contracts.
+- Clear migration policy for rule behavior changes.
 
 ## Non-goals
 
-- Executing arbitrary commands from README files.
+- Executing arbitrary commands from documentation.
 - Using an LLM as the source of truth for findings.
-- Claiming that a project "works" based only on documentation text.
-- Becoming a replacement for ecosystem-specific linters or test suites.
-
-## Русский
-
-RealityLint будет развиваться через **небольшие детерминированные проверки**, а не через попытку интерпретировать любой shell-код.
-
-Ближайшие цели: Go, Rust, Docker Compose, проверка `.env`, pre-commit, конфигурация правил и более удобная интеграция с SARIF/GitHub Code Scanning.
-
-Главный принцип остаётся прежним: команды из README не выполняются, LLM не используется как источник истины, неоднозначные случаи лучше пропустить, чем выдать ложную ошибку.
+- Claiming a project "works" based only on documentation text.
+- Replacing ecosystem-specific linters or test suites.

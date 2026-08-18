@@ -1,11 +1,23 @@
 name: RealityLint
-description: Verify README claims against repository facts without executing README commands.
+description: Detect deterministic documentation drift against repository facts without executing documentation commands.
 author: voonterr
 inputs:
   readme:
-    description: README path relative to repository root
+    description: Primary README path relative to repository root
     required: false
     default: README.md
+  all-docs:
+    description: Scan README*.md, docs/**/*.md and CONTRIBUTING.md
+    required: false
+    default: "false"
+  docs:
+    description: Additional comma-separated documentation globs
+    required: false
+    default: ""
+  config:
+    description: Optional RealityLint config path
+    required: false
+    default: ""
   fail-on:
     description: error, warning, or never
     required: false
@@ -17,16 +29,27 @@ runs:
       uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
       with:
         python-version: "3.13"
-    - name: Scan README
+    - name: Scan documentation
       shell: bash
       env:
         REALITYLINT_README: ${{ inputs.readme }}
+        REALITYLINT_ALL_DOCS: ${{ inputs.all-docs }}
+        REALITYLINT_DOCS: ${{ inputs.docs }}
+        REALITYLINT_CONFIG: ${{ inputs.config }}
         REALITYLINT_FAIL_ON: ${{ inputs.fail-on }}
-      run: >-
-        python "$GITHUB_ACTION_PATH/scripts/action.py"
-        "$GITHUB_WORKSPACE"
-        --readme "$REALITYLINT_README"
-        --fail-on "$REALITYLINT_FAIL_ON"
+      run: |
+        python -m pip install --disable-pip-version-check "$GITHUB_ACTION_PATH"
+        args=("$GITHUB_WORKSPACE" --readme "$REALITYLINT_README" --fail-on "$REALITYLINT_FAIL_ON")
+        if [[ "$REALITYLINT_ALL_DOCS" == "true" ]]; then
+          args+=(--all-docs)
+        fi
+        if [[ -n "$REALITYLINT_DOCS" ]]; then
+          args+=(--docs "$REALITYLINT_DOCS")
+        fi
+        if [[ -n "$REALITYLINT_CONFIG" ]]; then
+          args+=(--config "$REALITYLINT_CONFIG")
+        fi
+        python "$GITHUB_ACTION_PATH/scripts/action.py" "${args[@]}"
 branding:
   icon: check-circle
   color: purple

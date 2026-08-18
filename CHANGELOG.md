@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.5.0
+
+- Add project-wide multi-document scanning with `--all-docs` and custom documentation globs.
+- Add Docker Compose drift checks (`RL011`-`RL013`, `RL019`-`RL020`) for files, services, env files, profiles and nearby documented host ports.
+- Add documented environment-variable drift (`RL014`).
+- Add Go `go run` local-target and Go-version claim checks (`RL015`, `RL021`).
+- Add Rust/Cargo manifest, binary, feature, and MSRV claim checks (`RL016`-`RL018`, `RL022`).
+- Add `.realitylint.toml` docs scope and severity overrides.
+- Add inline ignore/disable/enable directives for intentional examples.
+- Add baseline generation and automatic baseline filtering.
+- Add `realitylint init`, `realitylint rules`, and `realitylint explain` commands.
+- Add JUnit XML output and pre-commit hook metadata.
+- Expand GitHub Action inputs for project-wide scans.
+- Promote package metadata from alpha to beta.
+
 ## 0.1.3
 
 - Fix Windows/GitHub Actions CLI crashes when the console uses a legacy code page such as cp1252.

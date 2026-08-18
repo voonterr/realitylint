@@ -1,12 +1,12 @@
 <div align="center">
 
-<img src="docs/assets/banner.svg" alt="RealityLint — проверка актуальности README" width="100%" />
+<img src="docs/assets/banner.svg" alt="RealityLint — проверка рассинхронизации документации" width="100%" />
 
 # RealityLint
 
-**README говорит, что проект работает. RealityLint проверяет, так ли это на самом деле.**
+**Документация описывает проект. RealityLint проверяет те утверждения, которые репозиторий может доказать.**
 
-Статическая и детерминированная проверка README по реальному содержимому репозитория — **без выполнения команд из документации, без LLM и без отправки исходного кода наружу.**
+Статическая и детерминированная проверка документации относительно репозитория — **без выполнения команд, без LLM, без API-ключа и без отправки кода наружу.**
 
 **by [@voonterr](https://github.com/voonterr)**
 
@@ -18,23 +18,23 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-7C3AED.svg)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/voonterr/realitylint?style=flat)](https://github.com/voonterr/realitylint/stargazers)
 
-`локальная работа` · `без API-ключа` · `без LLM` · `для CI` · `безопасный статический анализ`
+`local-first` · `deterministic` · `multi-doc` · `Docker` · `Go` · `Rust` · `CI-ready`
 
 </div>
 
 ---
 
-## Проблема
+## Зачем это нужно
 
-README со временем перестаёт соответствовать проекту.
+Документация устаревает, потому что код меняется быстрее текста.
 
-Переименовали команду. Перенесли файл. Удалили `.env.example`. Перешли с Yarn на npm. Или AI сгенерировал уверенную инструкцию про скрипт, которого в проекте никогда не было.
+Команду переименовали, файл перенесли, `.env.example` перестал соответствовать конфигурации, Docker Compose-сервис удалили, Cargo feature переименовали — а инструкция запуска всё ещё выглядит корректно.
 
-Обычные Markdown-линтеры проверяют оформление документа. RealityLint отвечает на другой вопрос:
+Markdown-линтер проверит разметку. RealityLint задаёт другой вопрос:
 
-> **Соответствуют ли проверяемые утверждения из README реальному состоянию репозитория?**
+> **Совпадают ли конкретные проверяемые утверждения документации с фактами внутри репозитория?**
 
-RealityLint специально работает консервативно: если утверждение нельзя доказать локальными данными репозитория, проверка его пропускает, а не пытается угадать.
+RealityLint намеренно консервативен: если утверждение нельзя детерминированно доказать локальными файлами, инструмент его пропускает, а не угадывает.
 
 ## Демо за 30 секунд
 
@@ -43,94 +43,155 @@ RealityLint специально работает консервативно: е
 </p>
 
 ```bash
-realitylint examples/broken-project --fail-on never
+python -m pip install realitylint
+realitylint .
 ```
 
-```text
-RealityLint v0.1.3 — by @voonterr
-RealityLint score: 34/100
-
-✗ README.md:3 ERROR   RL002 Ссылка ведёт на отсутствующий "docs/setup.md".
-! README.md:6 WARNING RL004 README использует yarn, но найден только npm lockfile.
-✗ README.md:7 ERROR   RL001 Скрипт "dev" отсутствует в package.json.
-✗ README.md:8 ERROR   RL003 Файл ".env.example" отсутствует.
-✗ README.md:9 ERROR   RL005 Python-файл "scripts/start.py" отсутствует.
-
-4 error(s), 1 warning(s), 0 notice(s).
-```
-
-> Сам CLI пока выводит сообщения правил на английском. Русская локализация интерфейса может быть добавлена позже; логика проверки от языка README не зависит.
-
-## Зачем RealityLint?
-
-| | RealityLint |
-|---|---|
-| **Детерминированность** | Один и тот же репозиторий → один и тот же результат. |
-| **Безопасность** | Команды из README разбираются, но никогда не выполняются. |
-| **Приватность** | Репозиторий не отправляется во внешние сервисы. |
-| **Удобство для CI** | Text, JSON, Markdown и SARIF. |
-| **Минимум ложных ошибок** | Неоднозначные утверждения пропускаются. |
-| **Поддержка монорепозиториев** | Понимает конструкции вроде `cd frontend && ...`. |
-
-## Что проверяется
-
-| Правило | Что проверяет RealityLint |
-|---|---|
-| `RL000` | Безопасность и доступность репозитория/README перед сканированием |
-| `RL001` | Наличие npm/pnpm/yarn/bun scripts в нужном `package.json` |
-| `RL002` | Существование относительных Markdown-ссылок и изображений |
-| `RL003` | Наличие указанных `.env.example` / `.env.sample` |
-| `RL004` | Соответствие package manager найденному lock-файлу |
-| `RL005` | Существование Python entry-файлов из команд README |
-| `RL006` | Существование Make targets в GNUmakefile/makefile/Makefile |
-| `RL007` | Соответствие указанной версии проекта `[project].version` |
-| `RL008` | Наличие LICENSE/COPYING при заявленной лицензии |
-| `RL009` | Существование очевидных путей к файлам из текста *(notice)* |
-| `RL010` | Битые metadata-файлы дают понятную ошибку вместо падения сканера |
-
-Также поддерживаются `cd subdir && ...`, `npm --prefix`, `yarn --cwd`, `pnpm --dir` / `pnpm -C`, `bun --cwd`, `make -C`, вложенные README, Windows-пути и prompt'ы, shell-блоки с ```/~~~ и некоторые inline-команды.
-
-## Быстрый старт
-
-**Нужен Python 3.10+.**
-
-Установка из PyPI:
+Проверить больше документации проекта:
 
 ```bash
-python -m pip install realitylint
+realitylint . --all-docs
 ```
 
-Проверить текущий репозиторий:
+## v0.5: Project Truth
+
+Версия v0.5 превращает RealityLint из README-чекера в движок поиска documentation drift по проекту.
+
+Главные изменения:
+
+- **multi-doc**: `README*.md`, `docs/**/*.md`, `CONTRIBUTING.md` и свои glob-паттерны;
+- **Docker Compose**: наличие Compose-файла, сервисов, `env_file`, profiles и расхождений localhost-портов;
+- **переменные окружения**: сравнение явных упоминаний в документации с `.env.example` / `.env.sample` и типичными обращениями из исходного кода;
+- **Go**: проверка локальных целей `go run` и drift версии Go;
+- **Rust/Cargo**: `Cargo.toml`, `--bin`, `--features` и drift MSRV;
+- **ignore directives** для намеренно неправильных примеров;
+- необязательный **`.realitylint.toml`** для scope и severity правил;
+- **baseline mode** для постепенного внедрения в старые репозитории;
+- команды `realitylint init`, `realitylint rules`, `realitylint explain RLxxx`;
+- **JUnit XML** плюс прежние text/JSON/Markdown/SARIF;
+- интеграция с **pre-commit**;
+- расширенный GitHub Action.
+
+Подробности: [RELEASE_NOTES_v0.5.0.md](RELEASE_NOTES_v0.5.0.md).
+
+## Правила
+
+| Rule | Что проверяется |
+|---|---|
+| `RL000` | Репозиторий и документ можно безопасно прочитать |
+| `RL001` | npm/pnpm/yarn/bun scripts существуют |
+| `RL002` | Локальные Markdown-ссылки ведут на существующие пути |
+| `RL003` | Упомянутые `.env.example` / `.env.sample` существуют |
+| `RL004` | Package manager совпадает с lock-файлом |
+| `RL005` | Python entry-файлы существуют |
+| `RL006` | Make targets существуют |
+| `RL007` | Версия pinned self-install совпадает с `pyproject.toml` |
+| `RL008` | Заявленная лицензия имеет LICENSE/COPYING-файл |
+| `RL009` | Очевидные inline-пути существуют *(notice)* |
+| `RL010` | Сломанные metadata обрабатываются без падения |
+| `RL011` | Для docker compose-команды существует читаемый Compose-файл |
+| `RL012` | Упомянутый Docker Compose service существует |
+| `RL013` | Пути Compose `env_file` существуют |
+| `RL014` | Явно упомянутые env-переменные присутствуют в env templates |
+| `RL015` | Локальная цель `go run` существует и содержит Go-код |
+| `RL016` | Для Cargo-команды существует читаемый `Cargo.toml` |
+| `RL017` | `cargo run --bin NAME` ссылается на определённый binary |
+| `RL018` | Cargo features из документации существуют в `[features]` |
+| `RL019` | Docker Compose profiles из `--profile` объявлены в сервисах |
+| `RL020` | Документированные рядом localhost-порты совпадают с published host ports Compose |
+| `RL021` | Версия Go в документации согласована с `go.mod` |
+| `RL022` | Версия Rust в документации согласована с Cargo `rust-version` |
+
+Посмотреть правила:
+
+```bash
+realitylint rules
+realitylint explain RL012
+```
+
+## Один README или вся документация
+
+Совместимый со старыми версиями режим:
 
 ```bash
 realitylint .
 ```
 
-Проверить другой репозиторий:
+Типовая документация проекта:
 
 ```bash
-realitylint /path/to/repository
+realitylint . --all-docs
 ```
 
-Установить последнюю версию напрямую из исходного кода:
+Свои glob-паттерны:
 
 ```bash
-git clone https://github.com/voonterr/realitylint.git
-cd realitylint
-python -m pip install -e .
+realitylint . --docs "README*.md,docs/**/*.md"
 ```
 
-Проверить специально сломанный пример:
+Относительные ссылки внутри вложенного Markdown-файла по-прежнему проверяются относительно директории этого файла.
+
+## Конфигурация
+
+По умолчанию ничего настраивать не нужно. Для крупных проектов можно создать `.realitylint.toml`:
+
+```toml
+[realitylint]
+docs = ["README*.md", "docs/**/*.md"]
+exclude = ["docs/vendor/**"]
+
+[severity]
+RL009 = "off"
+RL014 = "warning"
+```
+
+Допустимые значения severity: `error`, `warning`, `notice`, `off`.
+
+Создать конфиг и GitHub Actions workflow автоматически:
 
 ```bash
-realitylint examples/broken-project --fail-on never
+realitylint init
 ```
+
+## Ignore directives
+
+Для учебных и намеренно неправильных примеров можно отключать точечную проверку:
+
+```text
+<!-- realitylint-ignore-next-line RL012 -->
+<намеренно неправильный Compose-пример>
+```
+
+Или блок:
+
+```text
+<!-- realitylint-disable RL014 -->
+...
+<!-- realitylint-enable RL014 -->
+```
+
+## Baseline mode
+
+Для старого репозитория не обязательно исправлять десятки накопленных проблем перед включением CI.
+
+Создать baseline:
+
+```bash
+realitylint . --all-docs --write-baseline
+```
+
+`.realitylint-baseline.json` затем применяется автоматически: старые находки подавляются, новые продолжают обнаруживаться.
+
+Отключить baseline для конкретного запуска:
+
+```bash
+realitylint . --no-baseline
+```
+
 ## GitHub Actions
 
-Добавьте в другой проект `.github/workflows/realitylint.yml`:
-
 ```yaml
-name: README reality check
+name: Documentation reality check
 on: [pull_request]
 
 permissions:
@@ -143,11 +204,21 @@ jobs:
       - uses: actions/checkout@v7
       - uses: voonterr/realitylint@v1
         with:
+          all-docs: "true"
           fail-on: error
 ```
 
-Action создаёт inline-аннотации и Markdown summary прямо в GitHub Actions.
+Action добавляет inline annotations и Markdown Job Summary.
 
+## pre-commit
+
+```yaml
+repos:
+  - repo: https://github.com/voonterr/realitylint
+    rev: v0.5.0
+    hooks:
+      - id: realitylint
+```
 
 ## Форматы вывода
 
@@ -156,6 +227,7 @@ realitylint . --format text
 realitylint . --format json
 realitylint . --format markdown
 realitylint . --format sarif
+realitylint . --format junit
 ```
 
 Политика завершения CI:
@@ -166,64 +238,50 @@ realitylint . --fail-on warning
 realitylint . --fail-on never
 ```
 
-В JSON и SARIF текстовый баннер `by @voonterr` не добавляется, поэтому машинный вывод остаётся валидным.
-
-## Безопасность
+## Модель безопасности
 
 RealityLint — **статический анализатор**, а не sandbox.
 
-- Команды из README **никогда не выполняются**.
-- `--readme` не может выйти за корень репозитория.
-- Symlink и пути проверяются до чтения файлов.
-- Для README и metadata установлены ограничения размера.
-- Inputs GitHub Action передаются через переменные окружения, а не вставляются напрямую в shell-команду.
-- Управляющие символы GitHub annotations экранируются.
-- Сторонние Actions самого проекта закреплены по immutable commit SHA.
-- Самому сканеру не нужен сетевой доступ.
+- Команды из документации **никогда не выполняются**.
+- LLM не используется как источник истины.
+- Для сканирования не нужен API-ключ или внешний сервис.
+- Исходники и документация остаются локально.
+- Неоднозначные случаи лучше пропустить, чем выдать выдуманную ошибку.
+- Сохраняются проверки containment путей и ограничения размеров файлов.
+- GitHub annotations экранируют управляющие символы workflow-команд.
+- Сторонние GitHub Actions в самом репозитории закреплены immutable commit SHA.
 
-Уязвимость лучше сообщать по инструкции из [SECURITY.md](SECURITY.md), а не публиковать exploit в открытом issue.
+О проблемах безопасности: [SECURITY.md](SECURITY.md).
 
-## Принципы проекта
+## Философия проекта
 
-1. **Факты вместо догадок.** Каждая ошибка должна опираться на данные репозитория.
-2. **Никакого произвольного выполнения.** README анализируется статически.
-3. **Лучше промолчать, чем дать ложную ошибку.** Неоднозначный синтаксис пропускается.
-4. **Local-first.** Код и документация остаются на компьютере пользователя.
-5. **Маленькие независимые правила.** Новые проверки должны легко тестироваться.
+1. **Факты вместо догадок.** Finding должен подтверждаться содержимым репозитория.
+2. **Никакого произвольного выполнения.** Документация может содержать опасные команды — RealityLint их не запускает.
+3. **Лучше промолчать, чем уверенно ошибиться.**
+4. **Zero-config сначала, настройки при необходимости.**
+5. **Небольшие изолированные правила.** Новые экосистемы должны добавляться без превращения RealityLint в shell-интерпретатор.
 
-## Roadmap
+Дальнейшие планы: [ROADMAP.md](ROADMAP.md).
 
-Ближайшие направления:
+## Участие в разработке
 
-- [ ] Go: `go run`, module path и версия toolchain
-- [ ] Rust: `cargo run --bin`, features и MSRV
-- [ ] Docker Compose: services и ports
-- [ ] Проверка `.env`: code ↔ template ↔ docs
-- [ ] pre-commit hook
-- [ ] ignore directives для намеренно неправильных примеров
-- [ ] проверка CLI-флагов по сохранённому `--help`
-
-Подробности: [ROADMAP.md](ROADMAP.md).
-
-## Как помочь проекту
-
-Приветствуются bug reports, идеи новых правил и pull requests.
+Баг-репорты, идеи правил, сообщения о false positive и pull requests приветствуются.
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-Перед первым PR прочитайте [CONTRIBUTING.md](CONTRIBUTING.md). Для предложения нового правила также можно использовать готовый Issue Template.
+См. [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Статус
 
-RealityLint пока находится в стадии **alpha**. Он намеренно проверяет ограниченный набор утверждений и не пытается «понимать» любой shell-код или любой стиль документации.
+RealityLint v0.5 — **beta**. Проект намеренно проверяет ограниченный набор детерминированных утверждений и не пытается «понимать» произвольный естественный язык.
 
 ## Автор
 
 Создан и поддерживается **[@voonterr](https://github.com/voonterr)**.
 
-Если RealityLint помог найти сломанную инструкцию, поставьте ⭐ репозиторию — так проект смогут найти другие разработчики.
+Если RealityLint поймал реальный documentation drift в вашем проекте, ⭐ репозитория поможет другим разработчикам его найти.
 
 ## Лицензия
 
